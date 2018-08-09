@@ -1,0 +1,171 @@
+<html>
+<head>
+    <meta charset="utf-8">
+	<!-- development version, includes helpful console warnings -->
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.2.0/css/bootstrap-slider.min.css" rel="stylesheet">
+
+    <title> My title</title>
+</head>
+
+<body>
+    <div id="test">
+		Ingrese su nombre: <br>
+		<input v-model="username" @keyup.esc="clickMethod"> <button v-on:click="changeName('XXX')">Default User</button>
+        <p>Hola Mundo!!!  {{ username.toUpperCase() }}</p> 
+		<p>El nombre ha cambiado {{cantidad}} de veces </p>
+		<ul>
+            <li v-for="product in products">
+                {{product}}
+            </li>
+        </ul>			
+		<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>Nombre</th>
+							<th>Precio unitario</th>
+							<th>Stock</th>
+							<th>Acción</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="product in products">
+							<td >{{product.name}}</td>
+							<td> {{product.price | formatCost('$ ')}} </td>
+							<td> <input type="number" v-model.number="product.quantity"/> </td>
+							<td> <button @click="product.quantity +=1">+</button>
+								 <button @click="product.quantity -=1" v-bind:disabled="buttonDisabled(product.quantity)">-</button></td>
+						</tr>
+					</tbody>
+				</table>
+		 <h2> Total: {{ totalProducts }} </h2>
+		 <input type="button" ref="mybutton" value="OK" @click="clickMethod('x')"></button>
+		 
+		 <div>
+		  <p v-if="path === '/'">You are on the home page</p>
+		  <p v-else>You're on {{ path }}</p>
+		</div> 
+		<div>
+		  <p v-if=" totalProducts < 20 ">ALERTA!!! El stock esta muy bajo</p>
+		  <p v-else-if ="totalProducts < 30 " > WARNING!!! El stock esta bastante bajo</p>
+		  <p v-else>El stock esta ok</p>
+		</div>
+		<div> Cov v-show
+		  <p v-show =" totalProducts < 20 ">ALERTA!!! El stock esta muy bajo</p>
+		  <p v-show ="totalProducts > 20 && totalProducts < 30 " > WARNING!!! El stock esta bastante bajo</p>
+		  <p v-show = "totalProducts > 30 ">El stock esta ok</p>
+		</div>
+		
+		<ul>
+			<li v-for="(n, i) in 10">indice: {{i}}  valor n: {{n}}</li>
+		</ul>
+		
+		<div id="app">
+		  <p>{{ seconds }} seconds have elapsed since you opened the page.</p>
+		</div>
+		<div>
+		  <label><input type="radio" v-model="value" value="one"> One</label>
+		  <label><input type="radio" v-model="value" value="two"> Two</label>
+		  <label><input type="radio" v-model="value" value="three"> Three</label>
+
+		  <p>The value is {{ value }}</p>
+		</div>
+		<div> {{yourHtml}}</div>
+		<div v-html="yourHtml"></div>
+		
+		<p v-blink>This content will blink</p>
+		
+    </div> <!--Cierre de div id='test' -->
+    <script>
+	Vue.component('display-number', {
+	  template: '<p>The number is {{ number }}</p>',
+	  props: {
+		number: {
+		  type: Number,
+		  required: true
+		}
+	  }
+	});
+	
+	Vue.directive('blink', {
+	  bind(el, binding) {
+		let isVisible = true;
+		setInterval(() => {
+		  isVisible = !isVisible;
+		  el.style.visibility = isVisible ? 'visible' : 'hidden';
+		}, binding.value || 1000);
+	  }
+	});
+
+        test = new Vue({ 
+            el: '#test',  
+            data: {    
+                username: "" ,
+				cantidad: 0,
+				products:[{"id":1,"quantity":1,"name":"Compass", "price": 10},{"id":2,"quantity":0,"name":"Jacket", "price": 20},{"id":3,"quantity":5,"name":"Hiking Socks", "price": 30.3},{"id":4,"quantity":2,"name":"Suntan Lotion","price": 40.04}],
+				path: location.pathname,
+				seconds: 0,
+				value:"",
+				yourHtml: "<h2> Esto es una <br>prueba</h2>",
+				name:""
+            },
+            methods: {    
+                changeName: function(name){
+                    this.username=name;    
+                },
+				defaultUser: function(){
+                    this.username="Tu nombre";    
+                },
+				buttonDisabled: function(cantidad){
+                    return cantidad < 1;    
+                },
+				clickMethod: function(){
+					console.log( "clickMethod");
+					ele= this.$refs.mybutton.value="OKAY";
+				}
+            },
+//			created(){
+//                fetch('http://api.myjson.com/bins/74l63')
+//              .then(response => response.json())
+//                .then(json => {
+//                    this.products = json.products
+//               })
+//            },
+			created(){
+				setInterval(() => {
+				this.seconds++;
+			  }, 1000);
+			},
+			mounted(){
+				this.username = prompt("Ingrese su nombre:");
+			},
+            computed: {
+                totalProducts() {
+                    return this.products.reduce((sum,product) => {
+                        return sum + product.quantity
+                    },0)
+                }
+            },
+			watch:{
+				username(newVal, oldVal){
+					console.log(newVal , oldVal);
+					this.cantidad +=1;
+					
+				}
+			},
+			filters: {
+			  formatCost(value, symbol) {
+				return symbol + (value).toFixed(2);
+			  }
+			}, 
+			directive: {
+				blink(el){
+				
+				}
+			}
+        });
+		
+    </script>
+</body>
+
+</html>

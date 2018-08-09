@@ -1,0 +1,80 @@
+<html>
+<head>
+    <meta charset="utf-8">
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <title> Demo2</title>
+</head>
+<body>
+<div id="app">
+  <custom-button>Aceptar</custom-button>
+  <my-global-button></my-global-button>
+  <my-input type="text" value="Input"></my-input>
+
+	<display-number :number=10 :max=17 ></display-number>
+	<display-number :number="number" :max=11>segundos</display-number>
+
+  <color-preview color="red" :number=101>Hola</color-preview>
+
+</div>
+<script>
+Vue.component('display-number', {
+  template: '<p :style="style">Número: {{ number }}</p>',
+  props: {
+    number: {
+      type: Number,
+      required: true,
+	  validator(value) {
+        return value >= 10;
+      }
+    },
+	max: {
+      type: Number
+    }
+  },
+  computed: {
+      style() {
+        return {color: this.alert ? 'red' : 'green',fontSize:  this.alert ? 20 : 15, backgroundColor: this.alert ? 'yellow' : 'black'}
+      },
+	  alert(){ 
+		return  this.number > this.max ? true : false;
+	  }
+    }
+});
+
+ Vue.component('color-preview', {
+    template: '<div class="color-preview" :style="style">{{number}} </div>',
+    props: ['color', 'number'],
+    computed: {
+      style() {
+        return { backgroundColor: this.color };
+      }
+    }
+  });
+
+
+Vue.component('my-global-button', {
+  template: '<button><slot>Name-comp-global-default</slot></button>'
+});
+Vue.component('my-input', {
+  template: '<input type="button"><slot>My-Input</slot></input>'
+});
+  const CustomButton = {
+    template: '<button><slot>comp-btn-local</slot></button>'
+  };
+  new Vue({
+    el: '#app',
+    components: {
+      CustomButton
+    },
+	data: {
+      number: 1,
+    },
+    created() { setInterval(() => {this.number++;}, 1000 );
+    },
+	computed: {
+		milis(){return this.number < 10 ? 0 : 3000 }
+	}
+  });
+</script>
+</body>
+</html>
